@@ -2,6 +2,7 @@
 {
     public interface ITree
     {
-        public void CutIntoLog();
+        public int CutIntoLog();
     }
+    
 }
