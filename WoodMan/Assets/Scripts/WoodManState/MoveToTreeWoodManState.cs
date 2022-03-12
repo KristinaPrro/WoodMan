@@ -9,7 +9,7 @@ namespace Game.WoodMan
             public MoveToTreeWoodManState (WoodManManager woodman)
             {
                 Init(woodman);
-                _woodman.IdleSt_Init();
+                _woodman.MoveToTreeSt_Init();
             }
             
             public override void ChangeState()

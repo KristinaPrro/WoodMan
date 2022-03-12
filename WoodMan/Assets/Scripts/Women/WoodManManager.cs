@@ -30,6 +30,10 @@ namespace Game.WoodMan
         {
             State = wms;
         }
+        public void FixedUpdate()
+        {
+            State.SelectNewTree();
+        }
 
         public void StartGame()
         {
@@ -61,7 +65,6 @@ namespace Game.WoodMan
         public void SelectNewTree(TreeInfo near)
         {
             _nearTree = near;
-            Debug.Log("SelectNewTree");
             State.SelectNewTree();
         }
 
@@ -80,7 +83,7 @@ namespace Game.WoodMan
         private void IdleSt_Init()
         {
             AnimationPlay((int)AnimState.idle);
-            IdleSt_SelectTree();
+            //IdleSt_SelectTree();
         }
 
         private void IdleSt_SelectTree()
@@ -96,17 +99,17 @@ namespace Game.WoodMan
         private void MoveToTreeSt_Init()
         {
             _currentTree=_nearTree;
-            _availableTreeRemoved?.Invoke(_nearTree);
-            _agent.destination = _currentTree.TreeGO.transform.position;
+            _agent.destination = _currentTree.TreeC.Trans;
+            Debug.Log(_currentTree.TreeC.Trans);
+            Debug.Log(_nearTree.TreeC.Trans);
             AnimationPlay((int)AnimState.go);
-            Debug.Log("w1  _nearTree "+ _nearTree);
         }
         private void MoveToTreeSt_Trigger(Collider other)
         {
             //проверка на совпадение с объектом к которому мы шли? try?
             if (other.TryGetComponent(out ITree tree)) 
             {
-                State.ChangeState();
+                ChangeState();
             }
         }
         #endregion
@@ -123,7 +126,7 @@ namespace Game.WoodMan
             _countLog = _nearTree.TreeC.CutIntoLog();
             yield return new WaitForSeconds(_countLog * DELTA_TIME);
 
-            State.ChangeState();
+            ChangeState();
         }
         #endregion
 
@@ -141,7 +144,8 @@ namespace Game.WoodMan
 
             _bag.LoadLog();// переработать?
 
-            State.ChangeState();
+            _availableTreeRemoved?.Invoke(_nearTree);            
+            ChangeState();
         }
         #endregion
 
@@ -157,7 +161,7 @@ namespace Game.WoodMan
             //проверка на совпадение с объектом к которому мы шли? try?
             if (other.TryGetComponent(out IHome home))
             {
-                State.ChangeState();
+                ChangeState();
             }
         }
         #endregion

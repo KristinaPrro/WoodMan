@@ -9,7 +9,7 @@ namespace Game.WoodMan
     public class ChoosingTree : MonoBehaviour
     {
 
-        private List<TreeInfo> _availableTreeList=new List<TreeInfo>();
+        private List<TreeInfo> _availableTreeList;
         private Vector3 _startPosition;
         private UnityEvent<TreeInfo> _nearTreeUpdated;
         private UnityEvent<TreeInfo> _availableTreeAdded;
@@ -19,9 +19,10 @@ namespace Game.WoodMan
                UnityEvent<TreeInfo> availableTreeAdded, UnityEvent<TreeInfo> availableTreeRemoved)
         {
             _startPosition = startPosition;
-            _nearTreeUpdated=nearTreeUpdated;
+            _availableTreeList = new List<TreeInfo>();
 
-            _availableTreeAdded=availableTreeAdded;
+            _nearTreeUpdated=nearTreeUpdated;
+            _availableTreeAdded =availableTreeAdded;
             _availableTreeRemoved = availableTreeRemoved;
 
             _availableTreeAdded.AddListener(AddAvailableTree);
@@ -35,28 +36,34 @@ namespace Game.WoodMan
                 Distanse = Vector3.Distance(_startPosition, tree.TreeGO.transform.position),
                 TreeC = tree.TreeC,
                 TreeGO = tree.TreeGO
-            }); ;
+            });
             ChooseTree();
         }
         public void RemoveAvailableTree(TreeInfo tree)
         {
-            _availableTreeList.Remove(tree);
-            ChooseTree();
+            foreach (TreeInfo ti in _availableTreeList)
+            {
+                if (ti.TreeC.Trans== tree.TreeC.Trans)
+                {
+                    _availableTreeList.Remove(tree);
+                    ChooseTree();
+                    Debug.Log("tree.TreeC.Trans "+tree.TreeC.Trans);
+                    return;
+                }
+            }
         }
 
         public void ChooseTree()
         {
             TreeInfo near;
-
-            if ((_availableTreeList==new List<TreeInfo>()) || (_availableTreeList ==null))
+            if (_availableTreeList.Count==0) 
             {
-                near=new TreeInfo
+                near =new TreeInfo
                 {
                     Distanse = 0,
                     TreeC = null,
                     TreeGO = null,
                 }; 
-            Debug.Log("near 0 " + near);
             }
             else
             {
@@ -66,13 +73,9 @@ namespace Game.WoodMan
                     if (tree.Distanse < near.Distanse)
                     {
                         near = tree;
-                        Debug.Log("near 1 " + near);
                     }
-                    Debug.Log("near 2 " + near);
                 }
-                Debug.Log("near 3 " + near);
             }
-            Debug.Log("near 4 " + near);
             _nearTreeUpdated?.Invoke(near);
         }
     }

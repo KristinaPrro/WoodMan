@@ -44,13 +44,11 @@ namespace Game.Wood
             {
                 Vector3 deltaPos = new Vector3(Random.Range(_zonePoint[0].position.x, _zonePoint[1].position.x), 0, Random.Range(_zonePoint[0].position.y, _zonePoint[1].position.x));
                 Vector3 rotation = new Vector3(0, Random.Range(0, 360), 0);
-                Instantiate(_treeGO, transform.position + deltaPos, Quaternion.Euler(rotation));
+                GameObject tree=Instantiate(_treeGO, transform.position + deltaPos, Quaternion.Euler(rotation));
+                tree.GetComponent<TreeController>().AvailableTreeAdded = _availableTreeAdded;
             }
         }
-        //public void UpdateNavmesh(TreeInfo n)
-        //{
-        //    _surface.BuildNavMesh();
-        //}
+
     }
 
 }

@@ -22,14 +22,22 @@ namespace Game.Tree
         private UnityEvent<TreeInfo> _availableTreeAdded;
         private UnityEvent<TreeInfo> _availableTreeRemoved;
         private List<GameObject> _logGO;
+        private Vector3 _pos;
+
+        public Vector3 Trans{ get =>_pos; }
+        public UnityEvent<TreeInfo> AvailableTreeAdded { get => _availableTreeAdded; set => _availableTreeAdded = value; }
+        public GameObject TreeGO { get => gameObject; }
+        public float Distanse { get; set ; }
+
         private void OnEnable()
         {
-            _availableTreeAdded = GameObject.FindWithTag("Game").GetComponent<GameManager>().AvailableTreeAdded;      
-            transform.position = 
-                new Vector3(transform.position.x, _yPos, transform.position.z);
+            AvailableTreeAdded = GameObject.FindWithTag("Game").GetComponent<GameManager>().AvailableTreeAdded;      
+            _pos=new Vector3(transform.position.x, _yPos, transform.position.z);
+            transform.position = _pos;
+
             _logGO = new List<GameObject>();
 
-            _availableTreeAdded.Invoke(new TreeInfo {
+            AvailableTreeAdded.Invoke(new TreeInfo {
                 TreeC = this,
                 TreeGO = gameObject
             }) ;
@@ -37,9 +45,7 @@ namespace Game.Tree
 
         public int CutIntoLog()
         {
-            Debug.Log('0');
             StartCoroutine(CutTree());
-            Debug.Log('1');
             return _logCount;
         }
 
@@ -53,6 +59,7 @@ namespace Game.Tree
                 Vector3 rotation = new Vector3(Random.Range(0, 180), Random.Range(0, 90), Random.Range(0, 180));
                 _logGO.Add(Instantiate(_log, transform.position + deltaPos, Quaternion.Euler(rotation)));
             }
+            yield return new WaitForSeconds(_logCount*1f);
             Destroy();
 
         }
@@ -65,5 +72,6 @@ namespace Game.Tree
                 Destroy(log, 0.1f);
             }
         }
+
     }
 }
