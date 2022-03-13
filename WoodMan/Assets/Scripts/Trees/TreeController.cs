@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace Game.Tree
 {
@@ -19,28 +20,45 @@ namespace Game.Tree
         [SerializeField] private float _logScatter;
         [SerializeField] private float _timeBetweenCut;
 
-        private UnityEvent<TreeInfo> _availableTreeAdded;
-        private UnityEvent<TreeInfo> _availableTreeRemoved;
+        private UnityEvent<ITree> _availableTreeAdded;
+        private UnityEvent<ITree> _calculateCurrentTree;
         private List<GameObject> _logGO;
         private Vector3 _pos;
 
-        public Vector3 Trans{ get =>_pos; }
-        public UnityEvent<TreeInfo> AvailableTreeAdded { get => _availableTreeAdded; set => _availableTreeAdded = value; }
+        public Vector3 Position { get =>_pos; }
         public GameObject TreeGO { get => gameObject; }
         public float Distanse { get; set ; }
+        public UnityEvent<ITree> AvailableTreeAdded { get => _availableTreeAdded; set => _availableTreeAdded = value; }
+        public UnityEvent<ITree> CalculateCurrentTree { get => _calculateCurrentTree; set => _calculateCurrentTree = value; }
 
         private void OnEnable()
         {
-            AvailableTreeAdded = GameObject.FindWithTag("Game").GetComponent<GameManager>().AvailableTreeAdded;      
-            _pos=new Vector3(transform.position.x, _yPos, transform.position.z);
-            transform.position = _pos;
+            GameManager gameManager = GameObject.FindWithTag("Game").GetComponent<GameManager>();
+            AvailableTreeAdded = gameManager.AvailableTreeAdded;
+            CalculateCurrentTree = gameManager.CalculateCurrentTree;
 
             _logGO = new List<GameObject>();
 
-            AvailableTreeAdded.Invoke(new TreeInfo {
-                TreeC = this,
-                TreeGO = gameObject
-            }) ;
+            UpdatePos();
+            AvailableTreeAdded.Invoke(this);
+        }
+
+        private void FixedUpdate() //todo
+        {
+            UpdatePos();
+            CalculateCurrentTree.Invoke(this);
+        }
+
+        //public void OnDrop(PointerEventData eventData)
+        //{
+        //    UpdatePos();
+        //    CalculateCurrentTree.Invoke(this);
+        //    Debug.Log("Drop");
+        //}
+
+        private void UpdatePos()
+        {
+            _pos = transform.position;
         }
 
         public int CutIntoLog()
@@ -72,6 +90,5 @@ namespace Game.Tree
                 Destroy(log, 0.1f);
             }
         }
-
     }
 }

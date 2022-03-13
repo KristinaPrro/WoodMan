@@ -9,17 +9,18 @@ namespace Game.WoodMan
     public class ChoosingTree : MonoBehaviour
     {
 
-        private List<TreeInfo> _availableTreeList;
+        private List<ITree> _availableTreeList;
         private Vector3 _startPosition;
-        private UnityEvent<TreeInfo> _nearTreeUpdated;
-        private UnityEvent<TreeInfo> _availableTreeAdded;
-        private UnityEvent<TreeInfo> _availableTreeRemoved;
+        private UnityEvent<ITree> _nearTreeUpdated;
+        private UnityEvent<ITree> _availableTreeAdded;
+        private UnityEvent<ITree> _availableTreeRemoved;
 
-        public void SetInfo(Vector3 startPosition, UnityEvent<TreeInfo> nearTreeUpdated,
-               UnityEvent<TreeInfo> availableTreeAdded, UnityEvent<TreeInfo> availableTreeRemoved)
+        public void SetInfo(Vector3 startPosition, UnityEvent<ITree> nearTreeUpdated,
+               UnityEvent<ITree> availableTreeAdded, UnityEvent<ITree> availableTreeRemoved)
         {
             _startPosition = startPosition;
-            _availableTreeList = new List<TreeInfo>();
+            Debug.Log("_startPosition " + _startPosition);
+            _availableTreeList = new List<ITree>();
 
             _nearTreeUpdated=nearTreeUpdated;
             _availableTreeAdded =availableTreeAdded;
@@ -29,25 +30,21 @@ namespace Game.WoodMan
             _availableTreeRemoved.AddListener(RemoveAvailableTree);
         }
 
-        public void AddAvailableTree(TreeInfo tree)
+        public void AddAvailableTree(ITree tree)
         {
-            _availableTreeList.Add(new TreeInfo
-            {
-                Distanse = Vector3.Distance(_startPosition, tree.TreeGO.transform.position),
-                TreeC = tree.TreeC,
-                TreeGO = tree.TreeGO
-            });
+            _availableTreeList.Add(tree);
+            tree.Distanse = Vector3.Distance(_startPosition, tree.Position);
+            Debug.Log("tree.Distanse "+tree.Distanse+ " (Position ("+ (_availableTreeList .Count-1)+ ") " + tree.Position);
             ChooseTree();
         }
-        public void RemoveAvailableTree(TreeInfo tree)
+        public void RemoveAvailableTree(ITree tree)
         {
-            foreach (TreeInfo ti in _availableTreeList)
+            foreach (ITree ti in _availableTreeList)
             {
-                if (ti.TreeC.Trans== tree.TreeC.Trans)
+                if (ti.Position == tree.Position)
                 {
                     _availableTreeList.Remove(tree);
                     ChooseTree();
-                    Debug.Log("tree.TreeC.Trans "+tree.TreeC.Trans);
                     return;
                 }
             }
@@ -55,24 +52,21 @@ namespace Game.WoodMan
 
         public void ChooseTree()
         {
-            TreeInfo near;
+            ITree near;
             if (_availableTreeList.Count==0) 
             {
-                near =new TreeInfo
-                {
-                    Distanse = 0,
-                    TreeC = null,
-                    TreeGO = null,
-                }; 
+                near = null;
+                //_nearTreeUpdated?.Invoke(near);
+                //return;
             }
             else
             {
                 near = _availableTreeList[0];
-                foreach (var tree in _availableTreeList)
+                for (int i = 0; i < _availableTreeList.Count; i++)
                 {
-                    if (tree.Distanse < near.Distanse)
+                    if (_availableTreeList[i].Distanse < near.Distanse)
                     {
-                        near = tree;
+                        near = _availableTreeList[i];
                     }
                 }
             }

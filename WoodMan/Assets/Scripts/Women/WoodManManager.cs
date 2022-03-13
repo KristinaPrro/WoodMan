@@ -18,10 +18,10 @@ namespace Game.WoodMan
         private NavMeshAgent _agent;
         private Animator _animator;
         private IBag _bag;
-        private UnityEvent<TreeInfo> _availableTreeRemoved;
-        private UnityEvent<TreeInfo> _nearTreeUpdated;
-        private TreeInfo _nearTree;
-        private TreeInfo _currentTree;
+        private UnityEvent<ITree> _availableTreeRemoved;
+        private UnityEvent<ITree> _nearTreeUpdated;
+        private ITree _nearTree;
+        private ITree _currentTree;
         private int _countLog;
 
         public IWoodManState State { get; set; }
@@ -41,9 +41,10 @@ namespace Game.WoodMan
             _agent = GetComponent<NavMeshAgent>();
             _animator = GetComponent<Animator>();
             _bag = gameObject.GetComponent<IBag>();
+            State = new IdleWoodManState(this);
         } 
         
-        public void SetInfo(UnityEvent<TreeInfo> nearTreeUpdated, UnityEvent<TreeInfo> availableTreeRemoved, Vector3 startPosition)
+        public void SetInfo(UnityEvent<ITree> nearTreeUpdated, UnityEvent<ITree> availableTreeRemoved, Vector3 startPosition)
         {
             StartGame();
 
@@ -54,7 +55,6 @@ namespace Game.WoodMan
 
             _startPosition = startPosition;
             _agent.destination = _startPosition;
-            State = new IdleWoodManState(this);
         }
 
         public void ChangeState()
@@ -62,10 +62,10 @@ namespace Game.WoodMan
             State.ChangeState();
         }
 
-        public void SelectNewTree(TreeInfo near)
+        public void SelectNewTree(ITree near)
         {
             _nearTree = near;
-            State.SelectNewTree();
+            //State.SelectNewTree();
         }
 
         private void OnTriggerEnter(Collider other)
@@ -80,28 +80,30 @@ namespace Game.WoodMan
 
         // State методы
         #region IdleState
+        bool _statePlayed = false;
         private void IdleSt_Init()
         {
             AnimationPlay((int)AnimState.idle);
+            //_statePlayed = true;
             //IdleSt_SelectTree();
         }
 
         private void IdleSt_SelectTree()
         {
-            if (_nearTree.TreeGO != null)
+            if ((_nearTree != null) /*&& (_statePlayed)*/)
             {
                 ChangeState();
+                //_statePlayed = false;
             }
+            else Debug.Log("!!!");
         }
         #endregion
 
         #region MoveToTreeState
         private void MoveToTreeSt_Init()
         {
-            _currentTree=_nearTree;
-            _agent.destination = _currentTree.TreeC.Trans;
-            Debug.Log(_currentTree.TreeC.Trans);
-            Debug.Log(_nearTree.TreeC.Trans);
+            _agent.destination = _nearTree.Position;
+            Debug.Log("CURR "+ _nearTree.Position);
             AnimationPlay((int)AnimState.go);
         }
         private void MoveToTreeSt_Trigger(Collider other)
@@ -123,7 +125,7 @@ namespace Game.WoodMan
         private IEnumerator CutLog()
         {
             AnimationPlay((int)AnimState.cut);
-            _countLog = _nearTree.TreeC.CutIntoLog();
+            _countLog = _nearTree.CutIntoLog();
             yield return new WaitForSeconds(_countLog * DELTA_TIME);
 
             ChangeState();
