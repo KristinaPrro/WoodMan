@@ -8,7 +8,6 @@ namespace Game.WoodMan
         protected void Init(WoodManManager woodman)
         {
             _woodman = woodman;
-            Debug.Log(this);
         }
 
         public abstract void ChangeState();

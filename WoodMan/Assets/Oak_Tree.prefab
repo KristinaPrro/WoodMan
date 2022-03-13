@@ -98,8 +98,8 @@ MonoBehaviour:
   _yPos: 0.01
   _log: {fileID: 8775206666713444427, guid: 0f9343f0e66e96f44817bed8b8027dad, type: 3}
   _logCount: 3
-  _logScatter: 0
-  _timeBetweenCut: 1
+  _logScatter: 1
+  _timeBetweenCut: 1.4
 --- !u!135 &1771745121617937392
 SphereCollider:
   m_ObjectHideFlags: 0

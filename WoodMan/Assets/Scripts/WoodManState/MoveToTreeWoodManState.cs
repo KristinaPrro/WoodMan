@@ -21,11 +21,6 @@ namespace Game.WoodMan
             {
                 _woodman.MoveToTreeSt_Trigger(other);
             }
-
-            public override void SelectNewTree()
-            {
-                _woodman.IdleSt_SelectTree();
-            }
         }
     }
 }

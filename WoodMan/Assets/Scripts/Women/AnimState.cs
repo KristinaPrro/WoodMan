@@ -3,9 +3,11 @@
     public enum AnimState
     {
         idle,
-        go,
+        goTree,
         cut,
         collect,
+        goHome,
+        put
     }
 }
 

@@ -19,7 +19,6 @@ namespace Game.WoodMan
                UnityEvent<ITree> availableTreeAdded, UnityEvent<ITree> availableTreeRemoved)
         {
             _startPosition = startPosition;
-            Debug.Log("_startPosition " + _startPosition);
             _availableTreeList = new List<ITree>();
 
             _nearTreeUpdated=nearTreeUpdated;
@@ -34,7 +33,6 @@ namespace Game.WoodMan
         {
             _availableTreeList.Add(tree);
             tree.Distanse = Vector3.Distance(_startPosition, tree.Position);
-            Debug.Log("tree.Distanse "+tree.Distanse+ " (Position ("+ (_availableTreeList .Count-1)+ ") " + tree.Position);
             ChooseTree();
         }
         public void RemoveAvailableTree(ITree tree)
@@ -56,8 +54,6 @@ namespace Game.WoodMan
             if (_availableTreeList.Count==0) 
             {
                 near = null;
-                //_nearTreeUpdated?.Invoke(near);
-                //return;
             }
             else
             {

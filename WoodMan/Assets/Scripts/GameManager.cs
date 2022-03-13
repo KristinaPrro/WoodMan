@@ -33,7 +33,7 @@ namespace Game.Wood
 
         private void Awake()
         {
-            SetInfo();
+            StartGame();
         }
 
         private void StartGame()
@@ -46,19 +46,19 @@ namespace Game.Wood
 
             _choosingTree = gameObject.GetComponent<ChoosingTree>();
             _uIController = gameObject.GetComponent<UIController>();
+
+            _generateRandomTree.AddListener(GenerateRandomeTree); 
             SetInfo();
         }
 
         private void SetInfo()
         {
             Vector3 startPosition = _homeGO.transform.position;
-            startPosition.y = _woodman.gameObject.transform.position.y;
-
+            startPosition.y = _woodman.gameObject.transform.position.y;       
+                       
             _uIController.SetInfo(_generateRandomTree);
             _choosingTree.SetInfo(startPosition, _nearTreeUpdated, _availableTreeAdded, _availableTreeRemoved);
             _woodman.SetInfo(_nearTreeUpdated, _availableTreeRemoved, startPosition);
-
-            _generateRandomTree.AddListener(GenerateRandomeTree);
 
             for (int i = 0; i < _treeCount; i++)
             {

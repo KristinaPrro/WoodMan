@@ -24,6 +24,7 @@ namespace Game.Tree
         private UnityEvent<ITree> _calculateCurrentTree;
         private List<GameObject> _logGO;
         private Vector3 _pos;
+        private MeshRenderer _mesh;
 
         public Vector3 Position { get =>_pos; }
         public GameObject TreeGO { get => gameObject; }
@@ -36,7 +37,7 @@ namespace Game.Tree
             GameManager gameManager = GameObject.FindWithTag("Game").GetComponent<GameManager>();
             AvailableTreeAdded = gameManager.AvailableTreeAdded;
             CalculateCurrentTree = gameManager.CalculateCurrentTree;
-
+            _mesh = gameObject.GetComponent<MeshRenderer>(); ;
             _logGO = new List<GameObject>();
 
             UpdatePos();
@@ -61,10 +62,10 @@ namespace Game.Tree
             _pos = transform.position;
         }
 
-        public int CutIntoLog()
+        public float CutIntoLog()
         {
             StartCoroutine(CutTree());
-            return _logCount;
+            return _logCount*_timeBetweenCut;
         }
 
         private IEnumerator CutTree()
@@ -72,11 +73,12 @@ namespace Game.Tree
             for (int i = 0; i < _logCount; i++)
             {
                 yield return new WaitForSeconds(_timeBetweenCut);                
-                float in1Percent = _logScatter / 100;
-                Vector3 deltaPos = new Vector3(Random.Range(-100, 100) * in1Percent,0, Random.Range(-100, 100) * in1Percent);
+                Vector3 deltaPos = new Vector3(Random.Range(-_logScatter, _logScatter) ,0, Random.Range(-_logScatter, _logScatter));
                 Vector3 rotation = new Vector3(Random.Range(0, 180), Random.Range(0, 90), Random.Range(0, 180));
                 _logGO.Add(Instantiate(_log, transform.position + deltaPos, Quaternion.Euler(rotation)));
+
             }
+            _mesh.enabled = false;
             yield return new WaitForSeconds(_logCount*1f);
             Destroy();
 

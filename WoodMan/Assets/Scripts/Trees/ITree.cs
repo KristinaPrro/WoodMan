@@ -7,6 +7,6 @@ namespace Game.Tree
         public GameObject TreeGO { get;}        
         public Vector3 Position{ get; }  
         public float Distanse { get; set; }
-        public int CutIntoLog();
+        public float CutIntoLog();
     }
 }
