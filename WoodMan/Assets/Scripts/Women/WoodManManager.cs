@@ -98,8 +98,8 @@ namespace Game.WoodMan
         #region MoveToTreeState
         private void MoveToTreeSt_Init()
         {
-            _agent.destination = _nearTree.Position;
-            _currentTree = _nearTree;
+            _currentTree = _nearTree;            
+            _agent.destination = _currentTree.Position;
             AnimationPlay((int)AnimState.goTree);
         }
         private void MoveToTreeSt_Trigger(Collider other)
@@ -118,7 +118,7 @@ namespace Game.WoodMan
         private IEnumerator CutLog()
         {
             AnimationPlay((int)AnimState.cut);
-            _timeCutLog = _nearTree.CutIntoLog();
+            _timeCutLog = _currentTree.CutIntoLog();
             yield return new WaitForSeconds(_timeCutLog);
             _availableTreeRemoved?.Invoke(_currentTree);
             ChangeState();
